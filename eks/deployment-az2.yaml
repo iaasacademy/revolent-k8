@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rgame-us-east-1b
+  labels:
+    app: rgame
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rgame
+  template:
+    metadata:
+      labels:
+        app: rgame
+    spec:
+      containers:
+        - name: rgame
+          image: revolent/revolent-tower:v1
+          imagePullPolicy: IfNotPresent
+          # Pass the environment variable as they are required by our docker image
+          env:
+            - name: TABLE_NAME
+              value: rgame
+            - name: REGION
+              value: us-east-1
+          ports:
+            # Our docker image has server running on port 3000
+            - containerPort: 3000
+      nodeSelector:
+        # By specifying the nodeSelector, we are asking kubernetes to
+        # schedule 2 pods in availability zone 1a only
+        topology.kubernetes.io/zone: us-east-1b
